@@ -1,4 +1,4 @@
-import { UseGuards } from '@nestjs/common';
+import { Injectable, UseGuards } from '@nestjs/common';
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer, WsException } from '@nestjs/websockets';
 import { GatewayJwtBody } from 'server/decorators/gateway_jwt_body.decorator';
 import { JwtBodyDto } from 'server/dto/jwt_body.dto';
@@ -16,6 +16,7 @@ class PingPayload {
 }
 
 @WebSocketGateway()
+@Injectable()
 export class PingGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;

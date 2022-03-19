@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 import { Button } from '../common/button';
+import { Api } from '../../utils/use_api';
 
 export const Ping = () => {
   const [updates, setUpdates] = useState([]);
@@ -46,12 +47,18 @@ export const Ping = () => {
     socket.emit('unity-update', testMessage);
   };
 
+  const sendPostAndSeeWhatHappens = () => {
+    const api = new Api();
+    api.post('/unity-update', { data: testMessage });
+  };
+
   return (
     <>
       <section>
         <div>
           <input className="border-2" value={testMessage} onChange={(e) => setTestMessage(e.target.value)}></input>
           <Button onClick={sendMessage}>Send</Button>
+          <Button onClick={sendPostAndSeeWhatHappens}>Try POST</Button>
         </div>
         <div>
           {updates.map((update) => (

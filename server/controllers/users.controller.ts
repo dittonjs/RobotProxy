@@ -10,6 +10,7 @@ import { RefreshToken } from 'server/entities/refresh_token.entity';
 import { RoleKey } from 'server/entities/role.entity';
 import { User } from 'server/entities/user.entity';
 import { UserRole } from 'server/entities/user_role.entity';
+import { PingGateway } from 'server/providers/gateways/ping.gateway';
 import { AuthGuard } from 'server/providers/guards/auth.guard';
 import { JwtService } from 'server/providers/services/jwt.service';
 import { RefreshTokensService } from 'server/providers/services/refresh_tokens.service';
@@ -23,6 +24,7 @@ export class UsersController {
     private rolesService: RolesService,
     private jwtService: JwtService,
     private refreshTokenService: RefreshTokensService,
+    private pingGateway: PingGateway,
   ) {}
 
   @Get('/users')
@@ -36,6 +38,13 @@ export class UsersController {
   async getCurrentUser(@JwtBody() jwtBody: JwtBodyDto) {
     const user = await this.usersService.find(jwtBody.userId);
     return { user };
+  }
+
+  @Post('/unity-update')
+  @Skip(AuthGuard)
+  async unityUpdate(@Body() body) {
+    this.pingGateway.server.emit('unity-update', body.data);
+    return { status: 200 };
   }
 
   @Post('/users')

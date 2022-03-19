@@ -11,11 +11,12 @@ import { RefreshTokensController } from 'server/controllers/refresh_tokens.contr
 import { Role } from 'server/entities/role.entity';
 import { RolesService } from 'server/providers/services/roles.service';
 import { UserRole } from 'server/entities/user_role.entity';
+import { PingGateway } from 'server/providers/gateways/ping.gateway';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, RefreshToken, Role, UserRole])],
   controllers: [SessionsController, UsersController, RefreshTokensController],
-  providers: [UsersService, RolesService, RefreshTokensService, JwtService],
+  providers: [UsersService, RolesService, RefreshTokensService, JwtService, PingGateway],
   exports: [TypeOrmModule],
 })
 export class UsersModule {}
