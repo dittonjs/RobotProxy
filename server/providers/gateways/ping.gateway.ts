@@ -16,7 +16,6 @@ class PingPayload {
 }
 
 @WebSocketGateway()
-@UseGuards(GatewayAuthGuard)
 export class PingGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
@@ -33,35 +32,23 @@ export class PingGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     // IMPORTANT! The GatewayAuthGuard doesn't trigger on these handlers
     // if you need to do anything in this method you need to authenticate the JWT
     // manually.
-    try {
-      const jwt = client.handshake.auth.token;
-      const jwtBody = this.jwtService.parseToken(jwt);
-      console.log(client.handshake.query);
-      console.log('Client Connected: ', jwtBody.userId);
-    } catch (e) {
-      throw new WsException('Invalid token');
-    }
+    console.log('Connected');
+    // try {
+    //   const jwt = client.handshake.auth.token;
+    //   const jwtBody = this.jwtService.parseToken(jwt);
+    //   console.log(client.handshake.query);
+    //   console.log('Client Connected: ', jwtBody.userId);
+    // } catch (e) {
+    //   throw new WsException('Invalid token');
+    // }
   }
 
   handleDisconnect(client: Socket) {
     console.log('Client Disconnected');
   }
 
-  @SubscribeMessage('ping')
-  public handlePing(
-    @ConnectedSocket() client: Socket,
-    @MessageBody() payload: PingPayload,
-    @GatewayJwtBody() jwtBody: JwtBodyDto,
-  ) {
-    this.server.to(payload.currentRoom).emit('pong', { message: { userId: jwtBody.userId } });
-    console.log(client.rooms);
-  }
-
-  @SubscribeMessage('join-room')
-  public async joinRoom(client: Socket, payload: JoinPayload) {
-    console.log(payload);
-    payload.currentRoom && (await client.leave(payload.currentRoom));
-    await client.join(payload.newRoom);
-    return { msg: 'Joined room', room: payload.newRoom };
+  @SubscribeMessage('unity-update')
+  public handlePing(client, message: string) {
+    this.server.emit('unity-update', message);
   }
 }
